@@ -1,5 +1,5 @@
 import { User } from "../models/user.model.js";
-import jwt from "jsonwebtoken";
+import { generateToken } from "../utilities/tokenProvider.js";
 
 // Login User
 export const loginUser = async (req, res) => {
@@ -26,11 +26,11 @@ export const loginUser = async (req, res) => {
         .json({ success: false, message: "Enter correct password" });
     }
 
-    let token = jwt.sign({ _id: isExist._id }, process.env.SECRET_KEY);
-    console.log(token);
+    let token = generateToken(isExist._id);
+    console.log("token", token);
     return res
+      .cookie("token", token)
       .status(200)
-      .cookie("token", token, { secure: true })
       .json({ success: false, message: "Login succesfully !" });
   } catch (error) {
     console.log(error);

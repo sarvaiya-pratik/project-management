@@ -10,12 +10,14 @@ import userRouter from "./routes/user.route.js";
 import projectRouter from "./routes/project.route.js";
 
 const app = express();
-connectDb();
 
+connectDb();
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use("/auth", userRouter);
 app.use("/project", projectRouter);
 
