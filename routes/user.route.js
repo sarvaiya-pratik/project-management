@@ -1,7 +1,3 @@
-import express from "express";
-import { getAllUser, loginUser, registerUser, updateUser } from "../controllers/user.controller.js";
-const router = express.Router();
-
 /**
  * @swagger
  * components:
@@ -15,9 +11,7 @@ const router = express.Router();
  *         - role
  *
  *       properties:
- *         _id:
- *           type: objectId
- *           description: The auto-generated id of the User
+ *        
  *         name:
  *           type: string
  *           description: The name of User
@@ -27,6 +21,9 @@ const router = express.Router();
  *         password:
  *           type: string
  *           description: password of user
+ *         role:
+ *           type: string
+ *           description: The role of user
  *         createdAt:
  *           type: string
  *           format: date
@@ -35,22 +32,23 @@ const router = express.Router();
  *           type: string
  *           format: date
  *           description: The date the user was last updated
- *       example:
- *         _id: d5fE_asz
- *         name: Pratik Sarvaiya
- *         email: pratik123@gmail.com
- *         role: "user"
- *         password: 0000
- *         createdAt: 2024-05-08T04:48:59.667+00:00
- *         updatedAt: 2024-05-08T09:38:29.807+00:00
- * 
- *       
+ *       example: 
+ *         name: Pratik
+ *         email: pratik0123@gmail.com
+ *         password: "1234"
+ *         role: admin
+ *          
  *     
  */
 
+
+import express from "express";
+import { getAllUser, loginUser, registerUser, updateUser } from "../controllers/user.controller.js";
+const router = express.Router();
+
+
 /**
  * @swagger
-
  * /auth:
  *   get:
  *     summary: Get all users
@@ -61,6 +59,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *             schema:
+ *               type: array
  *               $ref: '#/components/schemas/User'
  *       500:
  *         description: somiting went wrong !
@@ -82,7 +81,15 @@ router.get('/', getAllUser)
  *       content:
  *         application/json:
  *           schema:
- *               $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 password:
+ *                   type: string
+ *               example:
+ *                  email: pratik123@gmail.com
+ *                  password: "0000"
  *     responses:
  *       200:
  *         description: Login succesfull.
@@ -121,8 +128,6 @@ router.post('/login', loginUser);
  *
  */
 router.post('/register', registerUser);
-
-
 /**
  * @swagger
 
@@ -130,6 +135,13 @@ router.post('/register', registerUser);
  *   put:
  *     summary: Update the user
  *     tags: [Authenticate]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The user id
  *     requestBody:
  *       required: true
  *       content:

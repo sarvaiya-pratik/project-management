@@ -48,15 +48,13 @@ const router = express.Router();
  *           format: date
  *           description: The date the user was last updated
  *       example:
- *         _id: 663b043bb705df19ef6ab53f
  *         title: Pratik Sarvaiya
  *         description: pratik123@gmail.com
  *         status: To-Do
  *         assignee: harsh
  *         project: 663b4a9941e83d9f9aa218ab
  *         dueDate: 04/03/2024
- *         createdAt: 2024-05-08T04:48:59.667+00:00
- *         updatedAt: 2024-05-08T09:38:29.807+00:00
+ 
  * 
  *       
  *     
@@ -92,6 +90,14 @@ router.get('/', hasRole("admin"), getAllTask)
  *   post:
  *     summary: add the task 
  *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The Projet id
+ * 
  *     requestBody:
  *       required: true
  *       content:
@@ -100,7 +106,7 @@ router.get('/', hasRole("admin"), getAllTask)
  *               $ref: '#/components/schemas/Task'
  *     responses:
  *       200:
- *         description: Login succesfull.
+ *         description: Task Added Succesfully.
  *         content:
  *           application/json:
  *             schema:
@@ -118,6 +124,14 @@ router.post('/:projectId', hasRole("admin"), addTask)
  *   put:
  *     summary: update the task
  *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The id of task
+ * 
  *     requestBody:
  *       required: true
  *       content:
@@ -126,7 +140,7 @@ router.post('/:projectId', hasRole("admin"), addTask)
  *               $ref: '#/components/schemas/Task'
  *     responses:
  *       200:
- *         description: Login succesfull.
+ *         description: Task Updated succesfully.
  *         content:
  *           application/json:
  *             schema:
@@ -144,6 +158,14 @@ router.put('/:id', hasRole("admin"), updateTask)
  *   delete:
  *     summary: delete the task
  *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The id of task
+ * 
  *     requestBody:
  *       required: true
  *       content:
@@ -152,7 +174,7 @@ router.put('/:id', hasRole("admin"), updateTask)
  *               $ref: '#/components/schemas/Task'
  *     responses:
  *       200:
- *         description: Login succesfull.
+ *         description: Task Deleted succesfully .
  *         content:
  *           application/json:
  *             schema:

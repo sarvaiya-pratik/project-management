@@ -21,14 +21,14 @@ const options = {
     definition: {
         openapi: "3.1.0",
         info: {
-            title: "LogRocket Express API with Swagger",
+            title: "Project Management App",
             version: "0.1.0",
             description:
-                "This is a simple CRUD API application made with Express and documented with Swagger",
+                "This is Project management app for handle the projects",
         },
         servers: [
             {
-                url: "http://localhost:8000",
+                url: "http://localhost:8000"
             },
         ],
     },
