@@ -4,19 +4,16 @@ import { getUserByToken } from "../utilities/tokenProvider.js";
 export const authUser = async (req, res, next) => {
   try {
     const token = req.cookies.token;
- 
-  
+
     if (!token) {
-      return res.status(404).json({ success: false, message: "Token not found" });
+      return res.status(404).json({ success: false, message: "Unauthorized" });
     }
-    const userId =await getUserByToken(token);
-  
+    const userId = await getUserByToken(token);
+
     if (!userId) {
       return res.status(404).json({ success: false, message: "user not found" });
     }
-
     const user = await User.findById(userId._id);
-    // console.log("user",user)
     req.user = user._id;
     next();
   } catch (error) {

@@ -9,10 +9,10 @@ const ProjectSchema = mongoose.Schema(
         ref: "user",
       },
     ],
-    tasks: {
+    tasks: [{
       type: Schema.Types.ObjectId,
       ref: "task",
-    },
+    }],
     user: {
       type: Schema.Types.ObjectId,
       ref: "user",

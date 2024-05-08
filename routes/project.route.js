@@ -1,11 +1,13 @@
 import express from "express";
-import { addProject, getAllProject, } from "../controllers/project.controller.js";
-import { authUser } from "../middleware/AuthUser.js";
+import { addProject, deleteProject, getAllProject, updateProject, } from "../controllers/project.controller.js";
+import { hasRole } from "../middleware/HasRole.js";
 
 const router = express.Router();
 
 // Login
-router.get("/all", getAllProject);
-router.post("/add", authUser,addProject);
+router.get('/', getAllProject);
+router.post('/add', addProject);
+router.delete('/:id', deleteProject);
+router.put('/:id', updateProject);
 
 export default router;

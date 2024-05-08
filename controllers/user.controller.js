@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import { generateToken } from "../utilities/tokenProvider.js";
 
 // Login User
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -27,18 +28,18 @@ export const loginUser = async (req, res) => {
     }
 
     let token = generateToken(isExist._id);
-    console.log("token", token);
+
     return res
       .cookie("token", token)
       .status(200)
-      .json({ success: false, message: "Login succesfully !" });
+      .json({ success: true, message: "Login succesfully !" });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ succes: false, message: "Something went worng !" })
   }
 };
 
 // Register users
-
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -58,6 +59,7 @@ export const registerUser = async (req, res) => {
     const newUser = new User();
     newUser.name = name;
     newUser.email = email;
+    newUser.role = role;
     newUser.setPassword(password);
     await newUser.save();
 
@@ -69,5 +71,40 @@ export const registerUser = async (req, res) => {
       .json({ success: true, message: "User created", user: newUser });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ succes: false, message: "Something went worng !" })
   }
 };
+
+export const getAllUser = async (req, res) => {
+
+  try {
+    const users = await User.find()
+    return res.status(200).json({ succes: true, data: users, message: "All Users fetched" });
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ succes: false, message: "Something went worng !" })
+  }
+}
+
+// Update user
+export const updateUser = async (req, res) => {
+
+  const { name, email, password, role } = req.body;
+  const { id } = req.params;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(id, { name, email, role }, { new: true });
+    if (password) {
+      updatedUser.setPassword(password)
+    }
+    await updatedUser.save();
+    return res.status(200).json({ succes: true, message: "User updated succesfully !" })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ succes: false, message: "Something went worng !" })
+  }
+
+}
+
