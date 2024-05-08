@@ -2,15 +2,21 @@ import mongoose, { Schema } from "mongoose";
 
 const ProjectSchema = mongoose.Schema(
   {
-    projectName: { type: String },
-    members: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    },
+    name: { type: String },
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
     tasks: {
       type: Schema.Types.ObjectId,
       ref: "task",
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+    }
   },
   { timestamps: true }
 );

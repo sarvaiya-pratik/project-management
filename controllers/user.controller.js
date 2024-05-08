@@ -61,7 +61,10 @@ export const registerUser = async (req, res) => {
     newUser.setPassword(password);
     await newUser.save();
 
+    const token = generateToken(newUser._id);
+
     return res
+      .cookie("token", token)
       .status(201)
       .json({ success: true, message: "User created", user: newUser });
   } catch (error) {

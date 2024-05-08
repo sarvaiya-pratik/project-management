@@ -9,7 +9,7 @@ const generateToken = (userId) => {
 
 const getUserByToken = async (token) => {
   try {
-    return jwt.verify(token, process.env.SECRET_KEY);
+    return await jwt.verify(token, process.env.SECRET_KEY);
   } catch (error) {
     console.log(error.message);
   }

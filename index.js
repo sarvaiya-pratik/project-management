@@ -12,6 +12,7 @@ import projectRouter from "./routes/project.route.js";
 const app = express();
 
 connectDb();
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
@@ -21,6 +22,20 @@ app.use(express.json());
 app.use("/auth", userRouter);
 app.use("/project", projectRouter);
 
-app.listen(process.env.PORT || 8000, () => {
-  console.log("Your server run on ", 8000);
-});
+
+const runServer = async () => {
+  try {
+      await connectDb();
+      app.listen(process.env.PORT, () => {
+          console.log('Server is running on PORT', process.env.PORT);
+      });
+  } catch (error) {
+      console.error('Error starting the server:', error);
+      process.exit(1);
+  }
+}
+
+runServer()
+
+
+
