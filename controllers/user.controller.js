@@ -64,11 +64,11 @@ export const registerUser = async (req, res) => {
     await newUser.save();
 
     const token = generateToken(newUser._id);
-
+    let user = await User.findById(newUser._id).select("-salt").select("-password")
     return res
       .cookie("token", token)
       .status(201)
-      .json({ success: true, message: "User created", user: newUser });
+      .json({ success: true, message: "User created", data: user });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ succes: false, message: "Something went worng !" })

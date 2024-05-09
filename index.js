@@ -52,7 +52,7 @@ app.use(express.json());
 
 // Routes
 app.use("/auth", userRouter);
-app.use("/project", authUser, hasRole("admin"), projectRouter);
+app.use("/project", authUser, projectRouter);
 app.use("/tasks", authUser, taskRouter)
 
 const runServer = async () => {

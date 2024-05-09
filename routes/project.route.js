@@ -15,20 +15,20 @@ const router = express.Router();
  *
  *       properties:
  *         _id:
- *           type: objectId
+ *           type: string
  *           description: The auto-generated id of the Project
  *         name:
  *           type: string
  *           description: The name of Project
  *         members:
- *           type: aray
+ *           type: array
  *           description: The members of project
  *         createdAt:
- *           type: string
+ *           type: date
  *           format: date
  *           description: The date the user was added
  *         updatedAt:
- *           type: string
+ *           type: date
  *           format: date
  *           description: The date the user was last updated
  *       example:
@@ -38,8 +38,6 @@ const router = express.Router();
  *       
  *     
  */
-
-
 
 
 
@@ -77,17 +75,39 @@ router.get('/', getAllProject);
  *           schema:
  *               $ref: '#/components/schemas/Project'
  *     responses:
- *       200:
- *         description: Task Added Succesfully.
+ *       201:
+ *         description: Project created !
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Project'
+ *             example :
+ *               success: true
+ *               message: Project created !
+ *               data: 
+ *                  name: test
+ *                  members: [e434343]
+ *                  user: e2343dsfsaf
+ *       400:
+ *         description: All fields are required !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: All fields are required !             
+ *       409:
+ *         description: Name already exist !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Name already exist !            
  *       500:
  *         description: somiting went wrong !
  *
  */
-router.post('/add', addProject);
+router.post('/add', hasRole("admin"), addProject);
 
 /**
  * @swagger
@@ -104,16 +124,26 @@ router.post('/add', addProject);
  *         description: The id of task
  *     responses:
  *       200:
- *         description: Project Deleted succesfully .
+ *         description: Project Deleted !
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Project'
+ *             example:
+ *               success: true
+ *               message: Project Deleted !              
+ *       404:
+ *         description: Project Not Found !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Project Not Found !
  *       500:
  *         description: somiting went wrong !
  *
  */
-router.delete('/:id', deleteProject);
+router.delete('/:id', hasRole("admin"), deleteProject);
 
 /**
  * @swagger
@@ -137,15 +167,27 @@ router.delete('/:id', deleteProject);
  *               $ref: '#/components/schemas/Project'
  *     responses:
  *       200:
- *         description: Project Deleted succesfully.
+ *         description: Project updated succesfully !
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Project'
+ *             example:
+ *               success: true
+ *               message: Project updated succesfully ! 
+ *       404:
+ *         description: Project Not Found !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Project Not Found !
+ 
  *       500:
  *         description: somiting went wrong !
  *
  */
-router.put('/:id', updateProject);
 
+
+router.put('/:id', hasRole("admin"), updateProject);
 export default router;

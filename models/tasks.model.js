@@ -15,9 +15,12 @@ const TaskSchema = mongoose.Schema(
       enum: ["To-Do", "In-Progress", "Validation", "Done"],
       default: "To-Do"
     },
-    assignee: {
-      type: String,
-    },
+    assignee: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "users"
+      }
+    ],
     project: {
       type: Schema.Types.ObjectId,
       ref: "project",

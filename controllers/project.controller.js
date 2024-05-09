@@ -3,7 +3,7 @@ import { Project } from "../models/project.model.js";
 // Get All Projects
 export const getAllProject = async (req, res) => {
   try {
-    console.log("run project")
+
     const projects = await Project.find().populate('tasks');
     return res.status(200).json({ succes: true, data: projects, message: "All Project fetched" });
   } catch (error) {

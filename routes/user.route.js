@@ -41,18 +41,18 @@
  *     
  */
 
-
 import express from "express";
 import { getAllUser, loginUser, registerUser, updateUser } from "../controllers/user.controller.js";
+import { authUser } from "../middleware/authUser.js";
+import { hasRole } from "../middleware/HasRole.js";
 const router = express.Router();
-
 
 /**
  * @swagger
  * /auth:
  *   get:
  *     summary: Get all users
- *     tags: [Authenticate]
+ *     tags: [Users]
  *     responses:
  *       200:
  *         description: All users fetched .
@@ -66,8 +66,7 @@ const router = express.Router();
  *
  */
 
-router.get('/', getAllUser)
-
+router.get('/', authUser, hasRole("admin"), getAllUser)
 
 /**
  * @swagger
@@ -75,7 +74,7 @@ router.get('/', getAllUser)
  * /auth/login:
  *   post:
  *     summary: Login the user
- *     tags: [Authenticate]
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -96,7 +95,28 @@ router.get('/', getAllUser)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               
+ *             example:
+ *               success : true
+ *               message : Login succesfully !
+ *       400:
+ *         description: All Fields required !
+ *         content:
+ *           application/json:
+ *             schema:
+ *               
+ *             example:
+ *               success : false
+ *               message : All fields are required !
+ *       404:
+ *         description: Please Register first
+ *         content:
+ *           application/json:
+ *             schema:
+ *               
+ *             example:
+ *               success : false
+ *               message : Please Register first!
  *       500:
  *         description: somiting went wrong !
  *
@@ -109,7 +129,7 @@ router.post('/login', loginUser);
  * /auth/register:
  *   post:
  *     summary: Register the user
- *     tags: [Authenticate]
+ *     tags: [Users]
  *     requestBody:
  *       required: true
  *       content:
@@ -117,12 +137,39 @@ router.post('/login', loginUser);
  *           schema:
  *             $ref: '#/components/schemas/User'
  *     responses:
- *       200:
- *         description: Login succesfull.
+ *       201:
+ *         description: User created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *             example:
+ *               success: true
+ *               message: User created
+ *               data: 
+ *                  _id: 663c5a6e61dda25fce36363e
+ *                  name: test
+ *                  role: user
+ *                  email: test123@gmail.com
+ *                  createdAt: 2024-05-09T05:09:02.644Z
+ *                  updatedAt: 2024-05-09T05:09:02.644Z
+ *       400:
+ *         description: All fields are required !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: All fields are required !
+ *       408:
+ *         description: User Already Exist ! !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: User Already Exist ! 
+ *                   
+ *                
  *       500:
  *         description: somiting went wrong !
  *
@@ -134,7 +181,7 @@ router.post('/register', registerUser);
  * /auth/{id}:
  *   put:
  *     summary: Update the user
- *     tags: [Authenticate]
+ *     tags: [Users]
  *     parameters:
  *       - in: path
  *         name: id
@@ -150,11 +197,13 @@ router.post('/register', registerUser);
  *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
- *         description: Login succesfull.
+ *         description: User updated succesfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *             example:
+ *               success: true
+ *               message: User updated succesfully
  *       500:
  *         description: somiting went wrong !
  *

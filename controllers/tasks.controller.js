@@ -28,16 +28,15 @@ export const addTask = async (req, res) => {
         const isTaskNameExist = await Task.findOne({ title })
 
         if (isTaskNameExist) {
-            return res.status(400).json({ succes: false, message: "This title already exist !" })
+            return res.status(409).json({ succes: false, message: "This title already exist !" })
         }
 
         const tasks = new Task({ title, description, status, assignee, dueDate, project: projectId })
         await tasks.save()
 
-        project.tasks.push(tasks._id)
-        await project.save();
 
-        return res.status(200).json({ succes: true, message: "Task added Succesfully !" })
+
+        return res.status(200).json({ succes: true, message: "Task added Succesfully !", data: tasks })
 
     } catch (error) {
         console.log(error)

@@ -14,7 +14,6 @@ const router = express.Router();
  *         - description
  *         - status
  *         - assignee
- *         - project
  *         - dueDate
  *
  *       properties:
@@ -33,9 +32,6 @@ const router = express.Router();
  *         assignee:
  *           type: string
  *           description: assignee of the task
- *         project:
- *           type: string
- *           description: project reference in the task
  *         dueDate:
  *           type: string
  *           description: due date of the task
@@ -48,11 +44,10 @@ const router = express.Router();
  *           format: date
  *           description: The date the user was last updated
  *       example:
- *         title: Pratik Sarvaiya
- *         description: pratik123@gmail.com
+ *         title: test
+ *         description: description test
  *         status: To-Do
- *         assignee: harsh
- *         project: 663b4a9941e83d9f9aa218ab
+ *         assignee: ["663b043bb705df19ef6ab53f"]
  *         dueDate: 04/03/2024
  
  * 
@@ -96,7 +91,7 @@ router.get('/', hasRole("admin"), getAllTask)
  *         schema:
  *           type: string
  *         required: true
- *         description: The Projet id
+ *         description: The Project id
  * 
  *     requestBody:
  *       required: true
@@ -105,12 +100,39 @@ router.get('/', hasRole("admin"), getAllTask)
  *           schema:
  *               $ref: '#/components/schemas/Task'
  *     responses:
- *       200:
+ *       201:
  *         description: Task Added Succesfully.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               message:  Task added Succesfully !
+ *       400:
+ *         description: All fields are required !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: All fields are required !
+ *       404:
+ *         description: Project not found !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Project not found !
+ *       409:
+ *         description: This title already exist !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: This title already exist !
+ * 
  *       500:
  *         description: somiting went wrong !
  *
@@ -144,7 +166,17 @@ router.post('/:projectId', hasRole("admin"), addTask)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               message: Task updated succesfully !
+ *       404:
+ *         description: Task not found !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Task not found !
  *       500:
  *         description: somiting went wrong !
  *
@@ -174,11 +206,20 @@ router.put('/:id', hasRole("admin"), updateTask)
  *               $ref: '#/components/schemas/Task'
  *     responses:
  *       200:
- *         description: Task Deleted succesfully .
+ *         description: Task Deleted succesfully !
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: true
+ *               message: Task Deleted succesfully !
+ *       404:
+ *         description: Task not found !
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: false
+ *               message: Task not found !
  *       500:
  *         description: somiting went wrong !
  *
@@ -200,11 +241,21 @@ router.delete('/:id', hasRole("admin"), deleteTask)
  *               $ref: '#/components/schemas/Task'
  *     responses:
  *       200:
- *         description: Login succesfull.
+ *         description: Status updated succesfully !
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *             example:
+ *               success: true
+ *               message: Status updated succesfully !
+ *       404:
+ *         description: Task not found !
+ *         content:
+ *           application/json:
+ *             schema:
+ *             example:
+ *               success: false
+ *               message: Task not found !
  *       500:
  *         description: somiting went wrong !
  *
