@@ -1,3 +1,4 @@
+import pool from "../db/connectDb.js";
 import { User } from "../models/user.model.js";
 import { getUserByToken } from "../utilities/tokenProvider.js";
 
@@ -13,8 +14,10 @@ export const authUser = async (req, res, next) => {
     if (!userId) {
       return res.status(404).json({ success: false, message: "user not found" });
     }
-    const user = await User.findById(userId._id);
-    req.user = user._id;
+    // const user = await User.findById(userId._id);
+    const user = await pool.query("SELECT * from users WHERE user_id = $1",[userId._id])
+    req.user = user.rows[0].user_id;
+    
     next();
   } catch (error) {
     console.log(error)
