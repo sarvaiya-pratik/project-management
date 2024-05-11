@@ -1,11 +1,13 @@
-import { Project } from "../models/project.model.js";
+import pool from "../db/connectDb.js";
+
 
 // Get All Projects
 export const getAllProject = async (req, res) => {
   try {
-
-    const projects = await Project.find().populate('tasks');
-    return res.status(200).json({ succes: true, data: projects, message: "All Project fetched" });
+    const projects = await pool.query(
+      "SELECT * FROM projects"
+    )
+    return res.status(200).json({ succes: true, data: projects.rows, message: "All Project fetched" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ succes: false, message: "Something went worng !" })
@@ -21,21 +23,21 @@ export const addProject = async (req, res) => {
     if (!name || !members) {
       return res.status(400).json({ succes: false, message: "All fields are required !" })
     }
-    const isNameExist = await Project.findOne({ name })
 
-    if (isNameExist) {
+    let isNameExist = await pool.query(
+      "SELECT proj_name FROM projects WHERE proj_name=$1", [name]
+    )
+
+    if (isNameExist.rows[0]) {
       return res.status(409).json({ succes: false, message: "Name already exist !" })
     }
 
-    const project = new Project({
-      user: userId,
-      name,
-      members,
-    });
+    const project = await pool.query(
+      "INSERT INTO projects (proj_name,members,user_id) VALUES ($1,$2,$3) RETURNING *", [name, members, userId]
+    )
 
-    await project.save();
-
-    return res.status(201).json({ succes: true, message: "Project created !", data: project })
+    console.log(project.rows)
+    return res.status(201).json({ succes: true, message: "Project created !", data: project.rows })
 
   } catch (error) {
     console.log(error)
@@ -48,13 +50,17 @@ export const deleteProject = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const isProject = await Project.findById(id);
+    const isProject = await pool.query(
+      "SELECT proj_id FROM projects WHERE proj_id=$1", [id]
+    )
 
-    if (!isProject) {
+    if (!isProject.rows[0]) {
       return res.status(404).json({ success: false, message: "Project Not Found !" })
     }
 
-    await Project.findByIdAndDelete(id);
+    await pool.query(
+      "DELETE FROM projects WHERE proj_id=$1", [id]
+    )
 
     return res.status(200).json({ succes: true, message: "Project Deeleted !" })
 
@@ -63,27 +69,30 @@ export const deleteProject = async (req, res) => {
     console.log(err)
     return res.status(500).json({ succes: false, message: "Something went worng !" })
   }
-
 }
 
 // Update Project
-
 export const updateProject = async (req, res) => {
+
   const { name, members } = req.body;
   const { id } = req.params;
 
   try {
-    const isProject = await Project.findById(id)
-    if (!isProject) {
-      return res.status(404).json({ succes: false, message: "Project Not Found !" })
+    const isProject = await pool.query(
+      "SELECT proj_id FROM projects WHERE proj_id=$1", [id]
+    )
+
+    if (!isProject.rows[0]) {
+      return res.status(404).json({ success: false, message: "Project Not Found !" })
     }
 
-    const updatedProject = await Project.findByIdAndUpdate(id, { name, members }, { new: true })
-    await updatedProject.save();
-    return res.status(200).json({ succes: true, message: "Project updated succesfully !", data: updatedProject })
+    const updatedproject = await pool.query(
+      "UPDATE projects SET proj_name=$1, members=$2 WHERE proj_id=$3 RETURNING *", [name, members, id]
+    )
+
+    return res.status(200).json({ succes: true, message: "Project updated succesfully !", data: updatedproject.rows[0] })
   } catch (error) {
     console.log(error)
     return res.status(500).json({ succes: false, message: "Something went worng !" })
   }
-
 }

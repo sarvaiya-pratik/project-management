@@ -1,10 +1,13 @@
-import { Project } from "../models/project.model.js";
-import { Task } from "../models/tasks.model.js";
+import pool from "../db/connectDb.js";
+
 
 export const getAllTask = async (req, res) => {
     try {
-        const tasks = await Task.find()
-        return res.status(200).json({ succes: true, data: tasks, message: "All Tasks fetched" });
+        const tasks = await pool.query(
+            "SELECT * FROM tasks"
+        )
+
+        return res.status(200).json({ succes: true, data: tasks.rows, message: "All Tasks fetched" });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ succes: false, message: "Something went worng !" })
@@ -16,8 +19,10 @@ export const addTask = async (req, res) => {
     const { projectId } = req.params;
 
     try {
-        const project = await Project.findById(projectId);
-        if (!project) {
+        const project = await pool.query(
+            "SELECT proj_name FROM projects WHERE proj_id=$1", [projectId]
+        )
+        if (!project.rows[0]) {
             return res.status(404).json({ succes: false, message: " Project not found!" })
         }
 
@@ -25,38 +30,45 @@ export const addTask = async (req, res) => {
             return res.status(400).json({ succes: false, message: "All fields are requiered !" })
         }
 
-        const isTaskNameExist = await Task.findOne({ title })
+        const isTaskNameExist = await pool.query(
+            "SELECT title FROM  tasks WHERE title=$1", [title]
+        )
 
-        if (isTaskNameExist) {
+        if (isTaskNameExist.rows[0]) {
             return res.status(409).json({ succes: false, message: "This title already exist !" })
         }
 
-        const tasks = new Task({ title, description, status, assignee, dueDate, project: projectId })
-        await tasks.save()
+        const tasks = await pool.query(
+            "INSERT INTO tasks (title,description,status,assignee,proj_id,duedate) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *",
+            [title, description, status, assignee, projectId, dueDate]
+        )
 
-
-
-        return res.status(200).json({ succes: true, message: "Task added Succesfully !", data: tasks })
+        return res.status(200).json({ succes: true, message: "Task added Succesfully !", data: tasks.rows[0] })
 
     } catch (error) {
         console.log(error)
         return res.status(500).json({ succes: false, message: "Something went worng !" })
     }
 }
+
+
 
 export const updateTask = async (req, res) => {
     const { id } = req.params;
     const { title, description, status, assignee, dueDate } = req.body;
     try {
 
-        const isTask = await Task.findById(id);
-        if (!isTask) {
+        const isTask = await pool.query(
+            "SELECT task_id FROM tasks WHERE task_id=$1", [id]
+        )
+        if (!isTask.rows[0]) {
             return res.status(404).json({ success: false, message: "Taks Not Found !" })
         }
 
-        const updatedTask = await Task.findByIdAndUpdate(id, { title, description, status, assignee, dueDate }, { new: true })
-        await updatedTask.save();
-        return res.status(200).json({ succes: true, message: "Task updated succesfully !", data: updatedTask })
+        const updatedtask = await pool.query(
+            "UPDATE tasks SET title=$1, description=$2, status=$3, assignee=$4, dueDate=$5 WHERE task_id=$6 RETURNING *", [title, description, status, assignee, dueDate, id]
+        )
+        return res.status(200).json({ succes: true, message: "Task updated succesfully !", data: updatedtask.rows[0] })
 
     } catch (error) {
         console.log(error)
@@ -64,20 +76,21 @@ export const updateTask = async (req, res) => {
     }
 }
 
-
 export const deleteTask = async (req, res) => {
-
     const { id } = req.params;
 
     try {
+        const isTask = await pool.query(
+            "SELECT task_id FROM tasks WHERE task_id=$1", [id]
+        )
 
-        const isTask = await Task.findById(id);
-
-        if (!isTask) {
+        if (!isTask.rows[0]) {
             return res.status(404).json({ success: false, message: "Taks Not Found !" })
         }
 
-        await Task.findByIdAndDelete(id);
+        await pool.query(
+            "DELETE FROM tasks WHERE task_id=$1", [id]
+        )
 
         return res.status(200).json({ succes: true, message: "Task Deeleted !" })
 
@@ -91,16 +104,18 @@ export const statusChange = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     try {
+        const isTask = await pool.query(
+            "SELECT task_id FROM tasks WHERE task_id=$1", [id]
+        )
 
-        const isTask = await Task.findById(id)
-        if (!isTask) {
-            return res.status(400).json({ succes: false, message: "Task not found" })
+        if (!isTask.rows[0]) {
+            return res.status(404).json({ success: false, message: "Taks Not Found !" })
         }
 
-        const updatedTask = await Task.findByIdAndUpdate(id, { status }, { runValidators: true })
-        await updatedTask.save();
-
-        return res.status(200).json({ succes: true, message: "Status updated succesfully !" })
+        const updatedtask = await pool.query(
+            "UPDATE tasks SET status=$1 WHERE task_id=$2 RETURNING *", [status, id]
+        )
+        return res.status(200).json({ succes: true, message: "Status updated succesfully !", data: updatedtask.rows[0] })
 
     } catch (error) {
         console.log(error)
